@@ -1,0 +1,119 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { motion } from "framer-motion";
+
+export default function ContactBook() {
+  const [contacts, setContacts] = useState({});
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [foundContact, setFoundContact] = useState(null);
+
+  const addContact = () => {
+    if (name && phone) {
+      setContacts({ ...contacts, [name]: phone });
+      setName("");
+      setPhone("");
+      alert("Contact added successfully!");
+    }
+  };
+
+  const searchContact = () => {
+    if (contacts[searchName]) {
+      setFoundContact(`${searchName}: ${contacts[searchName]}`);
+    } else {
+      setFoundContact("Contact not found!");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-r from-sky-400 via-rose-400 to-lime-400 p-8 flex flex-col items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-white text-5xl font-black mb-10 drop-shadow-lg"
+      >
+        📖 My Contact Book
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-3xl"
+      >
+        <Card className="rounded-3xl shadow-2xl bg-white/20 backdrop-blur-xl border-white/30">
+          <CardContent className="p-8">
+            <Tabs defaultValue="add">
+              <TabsList className="mb-6 bg-white/30 backdrop-blur-md rounded-2xl shadow-md">
+                <TabsTrigger value="add">➕ Add Contact</TabsTrigger>
+                <TabsTrigger value="view">📇 View Contacts</TabsTrigger>
+                <TabsTrigger value="search">🔍 Search Contact</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="add">
+                <div className="space-y-6">
+                  <Input
+                    className="bg-white/70 placeholder-gray-500"
+                    placeholder="Enter name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <Input
+                    className="bg-white/70 placeholder-gray-500"
+                    placeholder="Enter phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                  <Button className="w-full bg-green-600 hover:bg-green-700" onClick={addContact}>
+                    Save Contact
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="view">
+                <div className="space-y-4 max-h-64 overflow-y-auto">
+                  {Object.entries(contacts).length === 0 ? (
+                    <p className="text-white">No contacts found.</p>
+                  ) : (
+                    Object.entries(contacts).map(([name, phone]) => (
+                      <div
+                        key={name}
+                        className="p-4 bg-white/30 rounded-xl text-white shadow-md"
+                      >
+                        <strong>{name}</strong>: {phone}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="search">
+                <div className="space-y-6">
+                  <Input
+                    className="bg-white/70 placeholder-gray-500"
+                    placeholder="Enter name to search"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                  />
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={searchContact}>
+                    Search
+                  </Button>
+                  {foundContact && (
+                    <div className="mt-4 p-4 bg-white/30 text-white rounded-xl shadow">
+                      {foundContact}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+}
